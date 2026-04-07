@@ -1,5 +1,6 @@
 """Content analysis using AI."""
 
+import asyncio
 import json
 import re
 from typing import List, Optional
@@ -30,9 +31,29 @@ class ContentAnalyzer:
     async def analyze_batch(
         self,
         items: List[ContentItem],
-        batch_size: int = 10
+        concurrency: int = 8,
     ) -> List[ContentItem]:
-        analyzed_items = []
+        """Analyze items concurrently with a concurrency limit.
+
+        Args:
+            items: Items to analyze.
+            concurrency: Max concurrent AI calls.
+
+        Returns:
+            List[ContentItem]: All items with AI scores populated.
+        """
+        sem = asyncio.Semaphore(concurrency)
+
+        async def _guarded_analyze(item: ContentItem) -> ContentItem:
+            async with sem:
+                try:
+                    await self._analyze_item(item)
+                except Exception as e:
+                    print(f"Error analyzing item {item.id}: {e}")
+                    item.ai_score = 0.0
+                    item.ai_reason = "Analysis failed"
+                    item.ai_summary = item.title
+            return item
 
         with Progress(
             SpinnerColumn(),
@@ -43,21 +64,14 @@ class ContentAnalyzer:
         ) as progress:
             task = progress.add_task("Analyzing", total=len(items))
 
-            for i in range(0, len(items), batch_size):
-                batch = items[i:i + batch_size]
-                for item in batch:
-                    try:
-                        await self._analyze_item(item)
-                        analyzed_items.append(item)
-                    except Exception as e:
-                        print(f"Error analyzing item {item.id}: {e}")
-                        item.ai_score = 0.0
-                        item.ai_reason = "Analysis failed"
-                        item.ai_summary = item.title
-                        analyzed_items.append(item)
-                    progress.advance(task)
+            async def _tracked_analyze(item: ContentItem) -> ContentItem:
+                result = await _guarded_analyze(item)
+                progress.advance(task)
+                return result
 
-        return analyzed_items
+            analyzed = await asyncio.gather(*[_tracked_analyze(item) for item in items])
+
+        return list(analyzed)
 
     @retry(
         stop=stop_after_attempt(3),
