@@ -64,7 +64,7 @@ EMAIL_PASSWORD=your-app-password    # Gmail App Password（可选）
   "ai": {
     "provider": "openai",           // openai / gemini / anthropic / ali
     "model": "gemini-2.5-flash",    // 模型名称
-    "base_url": null,               // 代理地址，直连填 null，代理填 "http://your-proxy.com/v1"
+    "base_url": null,               // API 地址，官方直连填 null，第三方填 "http://your-api.com/v1"
     "api_key_env": "GEMINI_API_KEY",
     "languages": ["zh"]             // 摘要语言
   },
