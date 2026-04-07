@@ -459,6 +459,13 @@ class DaybreakPipelineService:
         topic_dedup: bool = True,
         save_to_daybreak_data: bool = False,
     ) -> dict[str, Any]:
+        # Reset token counters for this pipeline run
+        try:
+            from src.ai.tokens import reset_usage
+            reset_usage()
+        except ImportError:
+            pass  # tokens module not available outside Daybreak runtime
+
         fetch_result = await self.fetch_items(
             hours=hours,
             daybreak_path=daybreak_path,

@@ -57,6 +57,10 @@ class DaybreakOrchestrator:
             self.email_manager.check_subscriptions(self.storage)
 
         try:
+            # Reset token counters for this run
+            from .ai.tokens import reset_usage
+            reset_usage()
+
             # 1. Determine time window
             since = self._determine_time_window(force_hours)
             self.console.print(f"📅 Fetching content since: {since.strftime('%Y-%m-%d %H:%M:%S')}\n")
