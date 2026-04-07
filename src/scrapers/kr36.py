@@ -23,6 +23,9 @@ class Kr36Scraper(BaseScraper):
         self.kr36_config = config
 
     async def fetch(self, since: datetime) -> List[ContentItem]:
+        # Note: 36Kr newsflashes don't expose precise timestamps.
+        # published_at is set to now(); since-filtering is not possible.
+        # Deduplication relies on URL-based cross-run filtering.
         try:
             resp = await self.client.get(
                 "https://36kr.com/newsflashes",

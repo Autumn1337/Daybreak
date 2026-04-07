@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from .errors import HorizonMcpError
 
 
-VALID_SOURCES = {"github", "hackernews", "rss", "reddit", "telegram"}
+VALID_SOURCES = {"github", "hackernews", "rss", "reddit", "telegram", "arxiv", "producthunt", "kr36", "wallstreetcn", "v2ex"}
 ENV_KEY_RE = re.compile(r"^[A-Z_][A-Z0-9_]*$")
 
 
@@ -195,6 +195,16 @@ def apply_source_filter(config: Any, sources: list[str] | None) -> tuple[Any, li
     if "telegram" not in wanted:
         clone.sources.telegram.enabled = False
         clone.sources.telegram.channels = []
+    if "arxiv" not in wanted:
+        clone.sources.arxiv.enabled = False
+    if "producthunt" not in wanted:
+        clone.sources.producthunt.enabled = False
+    if "kr36" not in wanted:
+        clone.sources.kr36.enabled = False
+    if "wallstreetcn" not in wanted:
+        clone.sources.wallstreetcn.enabled = False
+    if "v2ex" not in wanted:
+        clone.sources.v2ex.enabled = False
 
     return clone, chosen, unknown
 
@@ -213,6 +223,16 @@ def get_enabled_sources(config: Any) -> list[str]:
         enabled.append("reddit")
     if getattr(config.sources.telegram, "enabled", False):
         enabled.append("telegram")
+    if getattr(config.sources.arxiv, "enabled", False):
+        enabled.append("arxiv")
+    if getattr(config.sources.producthunt, "enabled", False):
+        enabled.append("producthunt")
+    if getattr(config.sources.kr36, "enabled", False):
+        enabled.append("kr36")
+    if getattr(config.sources.wallstreetcn, "enabled", False):
+        enabled.append("wallstreetcn")
+    if getattr(config.sources.v2ex, "enabled", False):
+        enabled.append("v2ex")
     return enabled
 
 

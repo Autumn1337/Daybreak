@@ -46,6 +46,9 @@ class V2EXScraper(BaseScraper):
             except (ValueError, OSError):
                 published_at = datetime.now(timezone.utc)
 
+            if published_at < since:
+                continue
+
             items.append(ContentItem(
                 id=self._generate_id("v2ex", "topic", str(topic.get("id", ""))),
                 source_type=SourceType.V2EX,

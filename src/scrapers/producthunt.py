@@ -25,6 +25,8 @@ class ProductHuntScraper(BaseScraper):
         self.ph_config = config
 
     async def fetch(self, since: datetime) -> List[ContentItem]:
+        # Note: PH API returns today's top products without timestamps.
+        # published_at is set to now(); since-filtering is not applicable.
         limit = self.ph_config.limit
         token = os.getenv(self.ph_config.api_token_env)
 
