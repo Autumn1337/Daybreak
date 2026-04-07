@@ -1,0 +1,653 @@
+{
+  "version": "1.0",
+  "ai": {
+    "provider": "openai",
+    "model": "gemini-3-flash-preview",
+    "base_url": "http://your-proxy.com/v1",
+    "api_key_env": "GEMINI_API_KEY",
+    "temperature": 0.3,
+    "max_tokens": 4096,
+    "languages": [
+      "zh"
+    ]
+  },
+  "sources": {
+    "github": [],
+    "hackernews": {
+      "enabled": true,
+      "fetch_top_stories": 20,
+      "min_score": 100
+    },
+    "rss": [
+      {
+        "name": "simonwillison.net",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "jeffgeerling.com",
+        "url": "https://www.jeffgeerling.com/blog.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "seangoedecke.com",
+        "url": "https://www.seangoedecke.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "krebsonsecurity.com",
+        "url": "https://krebsonsecurity.com/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "daringfireball.net",
+        "url": "https://daringfireball.net/feeds/main",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "ericmigi.com",
+        "url": "https://ericmigi.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "antirez.com",
+        "url": "http://antirez.com/rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "idiallo.com",
+        "url": "https://idiallo.com/feed.rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "maurycyz.com",
+        "url": "https://maurycyz.com/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "pluralistic.net",
+        "url": "https://pluralistic.net/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "shkspr.mobi",
+        "url": "https://shkspr.mobi/blog/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "lcamtuf.substack.com",
+        "url": "https://lcamtuf.substack.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "mitchellh.com",
+        "url": "https://mitchellh.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "dynomight.net",
+        "url": "https://dynomight.net/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "utcc.utoronto.ca/~cks",
+        "url": "https://utcc.utoronto.ca/~cks/space/blog/?atom",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "xeiaso.net",
+        "url": "https://xeiaso.net/blog.rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "devblogs.microsoft.com/oldnewthing",
+        "url": "https://devblogs.microsoft.com/oldnewthing/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "righto.com",
+        "url": "https://www.righto.com/feeds/posts/default",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "lucumr.pocoo.org",
+        "url": "https://lucumr.pocoo.org/feed.atom",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "skyfall.dev",
+        "url": "https://skyfall.dev/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "garymarcus.substack.com",
+        "url": "https://garymarcus.substack.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "rachelbythebay.com",
+        "url": "https://rachelbythebay.com/w/atom.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "overreacted.io",
+        "url": "https://overreacted.io/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "timsh.org",
+        "url": "https://timsh.org/rss/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "johndcook.com",
+        "url": "https://www.johndcook.com/blog/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "gilesthomas.com",
+        "url": "https://gilesthomas.com/feed/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "matklad.github.io",
+        "url": "https://matklad.github.io/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "derekthompson.org",
+        "url": "https://www.theatlantic.com/feed/author/derek-thompson/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "evanhahn.com",
+        "url": "https://evanhahn.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "terriblesoftware.org",
+        "url": "https://terriblesoftware.org/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "rakhim.exotext.com",
+        "url": "https://rakhim.exotext.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "joanwestenberg.com",
+        "url": "https://joanwestenberg.com/rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "xania.org",
+        "url": "https://xania.org/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "micahflee.com",
+        "url": "https://micahflee.com/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "nesbitt.io",
+        "url": "https://nesbitt.io/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "construction-physics.com",
+        "url": "https://www.construction-physics.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "tedium.co",
+        "url": "https://feed.tedium.co/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "susam.net",
+        "url": "https://susam.net/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "entropicthoughts.com",
+        "url": "https://entropicthoughts.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "buttondown.com/hillelwayne",
+        "url": "https://buttondown.com/hillelwayne/rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "dwarkesh.com",
+        "url": "https://www.dwarkeshpatel.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "borretti.me",
+        "url": "https://borretti.me/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "wheresyoured.at",
+        "url": "https://www.wheresyoured.at/rss/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "jayd.ml",
+        "url": "https://jayd.ml/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "minimaxir.com",
+        "url": "https://minimaxir.com/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "geohot.github.io",
+        "url": "https://geohot.github.io/blog/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "paulgraham.com",
+        "url": "http://www.aaronsw.com/2002/feeds/pgessays.rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "filfre.net",
+        "url": "https://www.filfre.net/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "blog.jim-nielsen.com",
+        "url": "https://blog.jim-nielsen.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "dfarq.homeip.net",
+        "url": "https://dfarq.homeip.net/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "jyn.dev",
+        "url": "https://jyn.dev/atom.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "geoffreylitt.com",
+        "url": "https://www.geoffreylitt.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "downtowndougbrown.com",
+        "url": "https://www.downtowndougbrown.com/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "brutecat.com",
+        "url": "https://brutecat.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "eli.thegreenplace.net",
+        "url": "https://eli.thegreenplace.net/feeds/all.atom.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "abortretry.fail",
+        "url": "https://www.abortretry.fail/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "fabiensanglard.net",
+        "url": "https://fabiensanglard.net/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "oldvcr.blogspot.com",
+        "url": "https://oldvcr.blogspot.com/feeds/posts/default",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "bogdanthegeek.github.io",
+        "url": "https://bogdanthegeek.github.io/blog/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "hugotunius.se",
+        "url": "https://hugotunius.se/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "gwern.net",
+        "url": "https://gwern.substack.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "berthub.eu",
+        "url": "https://berthub.eu/articles/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "chadnauseam.com",
+        "url": "https://chadnauseam.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "simone.org",
+        "url": "https://simone.org/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "it-notes.dragas.net",
+        "url": "https://it-notes.dragas.net/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "beej.us",
+        "url": "https://beej.us/blog/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "hey.paris",
+        "url": "https://hey.paris/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "danielwirtz.com",
+        "url": "https://danielwirtz.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "matduggan.com",
+        "url": "https://matduggan.com/rss/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "refactoringenglish.com",
+        "url": "https://refactoringenglish.com/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "worksonmymachine.substack.com",
+        "url": "https://worksonmymachine.substack.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "philiplaine.com",
+        "url": "https://philiplaine.com/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "steveblank.com",
+        "url": "https://steveblank.com/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "bernsteinbear.com",
+        "url": "https://bernsteinbear.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "danieldelaney.net",
+        "url": "https://danieldelaney.net/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "troyhunt.com",
+        "url": "https://www.troyhunt.com/rss/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "herman.bearblog.dev",
+        "url": "https://herman.bearblog.dev/feed/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "tomrenner.com",
+        "url": "https://tomrenner.com/index.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "blog.pixelmelt.dev",
+        "url": "https://blog.pixelmelt.dev/rss/",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "martinalderson.com",
+        "url": "https://martinalderson.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "danielchasehooper.com",
+        "url": "https://danielchasehooper.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "chiark.greenend.org.uk/~sgtatham",
+        "url": "https://www.chiark.greenend.org.uk/~sgtatham/quasiblog/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "grantslatton.com",
+        "url": "https://grantslatton.com/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "experimental-history.com",
+        "url": "https://www.experimental-history.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "anildash.com",
+        "url": "https://anildash.com/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "aresluna.org",
+        "url": "https://aresluna.org/main.rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "michael.stapelberg.ch",
+        "url": "https://michael.stapelberg.ch/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "miguelgrinberg.com",
+        "url": "https://blog.miguelgrinberg.com/feed",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "keygen.sh",
+        "url": "https://keygen.sh/blog/feed.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "mjg59.dreamwidth.org",
+        "url": "https://mjg59.dreamwidth.org/data/rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "computer.rip",
+        "url": "https://computer.rip/rss.xml",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "tedunangst.com",
+        "url": "https://www.tedunangst.com/flak/rss",
+        "enabled": true,
+        "category": "hn-blog"
+      },
+      {
+        "name": "GitHub Trending - Daily",
+        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+        "enabled": true,
+        "category": "github-trending"
+      }
+    ],
+    "reddit": {
+      "enabled": true,
+      "subreddits": [
+        {
+          "subreddit": "MachineLearning",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 50
+        },
+        {
+          "subreddit": "LocalLLaMA",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 50
+        }
+      ],
+      "users": [],
+      "fetch_comments": 5
+    },
+    "telegram": {
+      "enabled": false,
+      "channels": []
+    },
+    "arxiv": {
+      "enabled": true,
+      "limit": 10,
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.CL"
+      ]
+    },
+    "producthunt": {
+      "enabled": false,
+      "limit": 10,
+      "api_token_env": "PRODUCTHUNT_TOKEN"
+    },
+    "kr36": {
+      "enabled": false,
+      "limit": 10
+    },
+    "wallstreetcn": {
+      "enabled": false,
+      "limit": 10
+    },
+    "v2ex": {
+      "enabled": false,
+      "limit": 10
+    }
+  },
+  "filtering": {
+    "ai_score_threshold": 6.0,
+    "time_window_hours": 24
+  },
+  "email": {
+    "imap_server": "imap.gmail.com",
+    "imap_port": 993,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "email_address": "your-email@gmail.com",
+    "password_env": "EMAIL_PASSWORD",
+    "sender_name": "Daybreak Daily",
+    "enabled": true
+  },
+  "feishu": {
+    "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/your-webhook-id",
+    "enabled": true
+  }
+}
