@@ -29,7 +29,12 @@ def _build_page_card(
     start = (page - 1) * ITEMS_PER_PAGE
     page_items = items[start:start + ITEMS_PER_PAGE]
 
+    current_cat = None
     for i, item in enumerate(page_items, start + 1):
+        cat = item.ai_category or "Other"
+        if cat != current_cat:
+            current_cat = cat
+            lines.append(f"**{cat}**")
         score = item.ai_score or 0
         summary = item.ai_summary or item.title
         if len(summary) > 80:

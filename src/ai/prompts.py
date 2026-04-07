@@ -64,6 +64,7 @@ CONTENT_ANALYSIS_USER = """Analyze the following content and provide a JSON resp
 - reason: Brief explanation for the score (mention discussion quality if comments are provided)
 - summary: One-sentence summary of the content
 - tags: Relevant topic tags (3-5 tags)
+- category: Exactly one of: "AI/ML", "Security", "Dev Tools", "Systems", "Industry", "Research", "Other"
 
 Content:
 Title: {title}
@@ -78,7 +79,8 @@ Respond with valid JSON only:
   "score": <number>,
   "reason": "<explanation>",
   "summary": "<one-sentence-summary>",
-  "tags": ["<tag1>", "<tag2>", ...]
+  "tags": ["<tag1>", "<tag2>", ...],
+  "category": "<category>"
 }}"""
 
 CONCEPT_EXTRACTION_SYSTEM = """You identify technical concepts in news that a reader might not know.

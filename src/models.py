@@ -38,6 +38,7 @@ class ContentItem(BaseModel):
     ai_reason: Optional[str] = None
     ai_summary: Optional[str] = None
     ai_tags: List[str] = Field(default_factory=list)
+    ai_category: Optional[str] = None
 
 
 class AIProvider(str, Enum):
@@ -200,6 +201,8 @@ class FilteringConfig(BaseModel):
 
     ai_score_threshold: float = 7.0
     time_window_hours: int = 24
+    max_items: int = 20
+    enrichment_threshold: float = 8.0
 
 
 class Config(BaseModel):

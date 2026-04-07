@@ -634,7 +634,9 @@
   },
   "filtering": {
     "ai_score_threshold": 6.0,
-    "time_window_hours": 24
+    "time_window_hours": 24,
+    "max_items": 20,
+    "enrichment_threshold": 8.0
   },
   "email": {
     "imap_server": "imap.gmail.com",

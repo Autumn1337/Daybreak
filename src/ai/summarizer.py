@@ -1,6 +1,7 @@
 """Daily summary generation — pure programmatic rendering."""
 
 import re
+from collections import OrderedDict
 from typing import List, Dict
 
 from ..models import ContentItem
@@ -25,6 +26,8 @@ LABELS = {
         "discussion": "Discussion",
         "references": "References",
         "tags": "Tags",
+        "header_sub": "From {total} items, {selected} important content pieces were selected",
+        "empty_sub": "Analyzed {total} items, but none met the importance threshold.",
         "empty_body": (
             "No significant developments today. This might indicate:\n"
             "- A quiet day in your tracked sources\n"
@@ -43,6 +46,8 @@ LABELS = {
         "discussion": "社区讨论",
         "references": "参考链接",
         "tags": "标签",
+        "header_sub": "从 {total} 条内容中，筛选出 {selected} 条重要资讯",
+        "empty_sub": "分析了 {total} 条内容，暂无达到重要性阈值的内容。",
         "empty_body": (
             "今日暂无重要动态，可能原因：\n"
             "- 今天关注的信息源较平静\n"
@@ -53,6 +58,22 @@ LABELS = {
             "2. 添加更多多样化的信息源\n"
             "3. 检查 AI 模型是否正常工作\n"
         ),
+    },
+}
+
+
+CATEGORY_ORDER = ["AI/ML", "Security", "Dev Tools", "Systems", "Industry", "Research", "Other"]
+
+CATEGORY_LABELS = {
+    "en": {
+        "AI/ML": "AI / Machine Learning", "Security": "Security",
+        "Dev Tools": "Developer Tools", "Systems": "Systems & Infrastructure",
+        "Industry": "Industry News", "Research": "Research", "Other": "Other",
+    },
+    "zh": {
+        "AI/ML": "AI / 机器学习", "Security": "安全",
+        "Dev Tools": "开发工具", "Systems": "系统与基础设施",
+        "Industry": "行业动态", "Research": "研究", "Other": "其他",
     },
 }
 
@@ -90,24 +111,53 @@ class DailySummarizer:
 
         header = (
             f"# {labels['header']} - {date}\n\n"
-            f"> From {total_fetched} items, {len(items)} important content pieces were selected\n\n"
+            f"> {labels['header_sub'].format(total=total_fetched, selected=len(items))}\n\n"
             "---\n\n"
         )
 
-        # TOC
-        toc_entries = []
-        for i, item in enumerate(items):
-            _t = item.metadata.get(f"title_{language}") or item.title
-            t = str(_t).replace("[", "(").replace("]", ")")
-            if language == "zh":
-                t = _pangu(t)
-            score = item.ai_score or "?"
-            toc_entries.append(f"{i + 1}. [{t}](#item-{i + 1}) \u2b50\ufe0f {score}/10")
-        toc = "\n".join(toc_entries) + "\n\n---\n\n"
+        # Group items by category, preserving score order within each group
+        grouped: OrderedDict[str, List[ContentItem]] = OrderedDict()
+        for item in items:
+            cat = item.ai_category or "Other"
+            grouped.setdefault(cat, []).append(item)
 
-        parts = [self._format_item(item, labels, language, i + 1) for i, item in enumerate(items)]
+        cat_labels = CATEGORY_LABELS.get(language, CATEGORY_LABELS["en"])
 
-        return header + toc + "".join(parts)
+        # Build TOC and body grouped by category
+        toc_lines: List[str] = []
+        body_parts: List[str] = []
+        idx = 0
+
+        for cat in CATEGORY_ORDER:
+            if cat not in grouped:
+                continue
+            cat_items = grouped[cat]
+            cat_display = cat_labels.get(cat, cat)
+
+            toc_lines.append(f"**{cat_display}**")
+            for item in cat_items:
+                idx += 1
+                _t = item.metadata.get(f"title_{language}") or item.title
+                t = str(_t).replace("[", "(").replace("]", ")")
+                if language == "zh":
+                    t = _pangu(t)
+                score = item.ai_score or "?"
+                toc_lines.append(f"{idx}. [{t}](#item-{idx}) \u2b50\ufe0f {score}/10")
+            toc_lines.append("")
+
+        toc = "\n".join(toc_lines) + "---\n\n"
+
+        idx = 0
+        for cat in CATEGORY_ORDER:
+            if cat not in grouped:
+                continue
+            cat_display = cat_labels.get(cat, cat)
+            body_parts.append(f"## {cat_display}\n\n")
+            for item in grouped[cat]:
+                idx += 1
+                body_parts.append(self._format_item(item, labels, language, idx))
+
+        return header + toc + "".join(body_parts)
 
     def _format_item(self, item: ContentItem, labels: dict, language: str, index: int) -> str:
         """Format a single ContentItem into Markdown."""
@@ -152,7 +202,7 @@ class DailySummarizer:
 
         lines = [
             f'<a id="item-{index}"></a>',
-            f"## [{title}]({url}) \u2b50\ufe0f {score}/10",  # ⭐️
+            f"### [{title}]({url}) \u2b50\ufe0f {score}/10",  # ⭐️
             "",
             summary,
             "",
@@ -189,6 +239,6 @@ class DailySummarizer:
         """Generate summary when no high-scoring items were found."""
         return (
             f"# {labels['header']} - {date}\n\n"
-            f"> Analyzed {total_fetched} items, but none met the importance threshold.\n\n"
+            f"> {labels['empty_sub'].format(total=total_fetched)}\n\n"
             + labels["empty_body"]
         )

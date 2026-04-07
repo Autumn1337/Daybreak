@@ -158,6 +158,13 @@ class RSSScraper(BaseScraper):
 
         return None
 
+    @staticmethod
+    def _strip_html(html: str) -> str:
+        """Remove HTML tags and collapse whitespace."""
+        text = re.sub(r'<[^>]+>', ' ', html)
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip()
+
     def _extract_content(self, entry: dict) -> str:
         """Extract text content from feed entry.
 
@@ -165,15 +172,15 @@ class RSSScraper(BaseScraper):
             entry: Feed entry data
 
         Returns:
-            str: Extracted text content
+            str: Extracted text content (HTML stripped)
         """
         # Try different content fields
         if "summary" in entry:
-            return entry.summary
+            raw = entry.summary
         elif "description" in entry:
-            return entry.description
+            raw = entry.description
         elif "content" in entry and entry.content:
-            # content is usually a list
-            return entry.content[0].get("value", "")
-
-        return ""
+            raw = entry.content[0].get("value", "")
+        else:
+            return ""
+        return self._strip_html(raw)

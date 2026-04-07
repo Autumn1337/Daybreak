@@ -31,7 +31,7 @@ class ContentAnalyzer:
     async def analyze_batch(
         self,
         items: List[ContentItem],
-        concurrency: int = 8,
+        concurrency: int = 5,
     ) -> List[ContentItem]:
         """Analyze items concurrently with a concurrency limit.
 
@@ -163,3 +163,4 @@ class ContentAnalyzer:
         item.ai_reason = result.get("reason", "")
         item.ai_summary = result.get("summary", item.title)
         item.ai_tags = result.get("tags", [])
+        item.ai_category = result.get("category", "Other")

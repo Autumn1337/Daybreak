@@ -5,6 +5,7 @@ For items that pass the score threshold, this module:
 2. Feeds search results + item content to AI to generate grounded background knowledge
 """
 
+import asyncio
 import json
 import re
 import sys
@@ -29,12 +30,22 @@ class ContentEnricher:
     def __init__(self, ai_client: AIClient):
         self.client = ai_client
 
-    async def enrich_batch(self, items: List[ContentItem]) -> None:
-        """Enrich items in-place with background knowledge.
+    async def enrich_batch(self, items: List[ContentItem], concurrency: int = 5) -> None:
+        """Enrich items in-place with background knowledge (concurrent).
 
         Args:
             items: Content items to enrich (modified in-place)
+            concurrency: Max concurrent enrichment operations.
         """
+        sem = asyncio.Semaphore(concurrency)
+
+        async def _guarded(item: ContentItem) -> None:
+            async with sem:
+                try:
+                    await self._enrich_item(item)
+                except Exception as e:
+                    print(f"Error enriching item {item.id}: {e}")
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -44,12 +55,11 @@ class ContentEnricher:
         ) as progress:
             task = progress.add_task("Enriching", total=len(items))
 
-            for item in items:
-                try:
-                    await self._enrich_item(item)
-                except Exception as e:
-                    print(f"Error enriching item {item.id}: {e}")
+            async def _tracked(item: ContentItem) -> None:
+                await _guarded(item)
                 progress.advance(task)
+
+            await asyncio.gather(*[_tracked(item) for item in items])
 
     async def _web_search(self, query: str, max_results: int = 3) -> list:
         """Search the web for context via DuckDuckGo.
@@ -140,8 +150,10 @@ class ContentEnricher:
             else:
                 content_text = item.content[:4000]
 
-        # Step 1: AI identifies concepts to explain
-        queries = await self._extract_concepts(item, content_text)
+        # Use existing AI tags as search queries (skip concept extraction AI call)
+        queries = [f"{item.title} {tag}" for tag in (item.ai_tags or [])[:2]]
+        if not queries:
+            queries = [item.title]
 
         # Step 2: Search web for each concept
         all_results = []

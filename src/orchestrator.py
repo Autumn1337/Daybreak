@@ -106,6 +106,14 @@ class DaybreakOrchestrator:
                 )
             important_items = deduped_items
 
+            # 5.7 Cap to max_items (keep top-scored)
+            max_items = self.config.filtering.max_items
+            if len(important_items) > max_items:
+                important_items = important_items[:max_items]
+                self.console.print(
+                    f"✂️  Capped to top {max_items} items\n"
+                )
+
             # Show per-sub-source selection breakdown
             selected_counts: Dict[str, int] = defaultdict(int)
             for item in important_items:
@@ -115,9 +123,16 @@ class DaybreakOrchestrator:
                 self.console.print(f"      • {source_key}: {count}")
             self.console.print("")
 
-            # 6. Search related stories + enrich with background knowledge (2nd AI pass)
-            # TODO: re-enable after optimizing for speed
-            # await self._enrich_important_items(important_items)
+            # 6. Enrich top-scored items with background knowledge (2nd AI pass)
+            enrich_threshold = self.config.filtering.enrichment_threshold
+            top_items = [i for i in important_items if (i.ai_score or 0) >= enrich_threshold]
+            if top_items:
+                self.console.print(
+                    f"📚 Enriching {len(top_items)} items with score >= {enrich_threshold}..."
+                )
+                await self._enrich_important_items(top_items)
+            else:
+                self.console.print("📚 No items scored high enough for enrichment\n")
 
             # 7. Generate and save daily summaries for each configured language
             today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -144,11 +159,17 @@ class DaybreakOrchestrator:
 
             # Send Feishu notification if configured
             if self.config.feishu and self.config.feishu.enabled:
+                from .ai.summarizer import CATEGORY_ORDER
+                cat_rank = {c: i for i, c in enumerate(CATEGORY_ORDER)}
+                feishu_items = sorted(
+                    important_items,
+                    key=lambda x: (cat_rank.get(x.ai_category or "Other", 99), -(x.ai_score or 0)),
+                )
                 self.console.print("🔔 Sending Feishu notification...")
                 from .services.feishu import send_feishu_summary
                 feishu_ok = await send_feishu_summary(
                     webhook_url=self.config.feishu.webhook_url,
-                    items=important_items,
+                    items=feishu_items,
                     date=today,
                     total_fetched=len(all_items),
                 )
