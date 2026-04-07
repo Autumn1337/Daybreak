@@ -1,4 +1,4 @@
-"""Application service for staged Horizon pipeline execution."""
+"""Application service for staged Daybreak pipeline execution."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .errors import HorizonMcpError
-from .horizon_adapter import (
+from .errors import DaybreakMcpError
+from .daybreak_adapter import (
     apply_source_filter,
     dicts_to_items,
     get_enabled_sources,
@@ -20,7 +20,7 @@ from .horizon_adapter import (
     make_orchestrator,
     make_storage,
     resolve_config_path,
-    resolve_horizon_path,
+    resolve_daybreak_path,
 )
 from .run_store import RunStore
 
@@ -33,13 +33,13 @@ def _default_runs_root() -> Path:
 class PipelineContext:
     """Resolved execution context per call."""
 
-    horizon_path: Path
+    daybreak_path: Path
     config_path: Path
     runtime: Any
     config: Any
 
 
-class HorizonPipelineService:
+class DaybreakPipelineService:
     """High-level staged pipeline service."""
 
     def __init__(self, runs_root: Path | None = None):
@@ -79,7 +79,7 @@ class HorizonPipelineService:
         try:
             meta = self.run_store.load_meta(run_id)
         except FileNotFoundError as exc:
-            raise HorizonMcpError(
+            raise DaybreakMcpError(
                 code="HZ_RUN_NOT_FOUND",
                 message=f"run_id={run_id} does not exist.",
                 details={"run_id": run_id},
@@ -95,17 +95,17 @@ class HorizonPipelineService:
         """Read staged item payload (JSON)."""
 
         if max_items <= 0:
-            raise HorizonMcpError(code="HZ_INVALID_INPUT", message="max_items must be greater than 0.")
+            raise DaybreakMcpError(code="HZ_INVALID_INPUT", message="max_items must be greater than 0.")
         try:
             items = self.run_store.load_items(run_id, stage)
         except ValueError as exc:
-            raise HorizonMcpError(
+            raise DaybreakMcpError(
                 code="HZ_INVALID_STAGE",
                 message=str(exc),
                 details={"stage": stage},
             ) from exc
         except FileNotFoundError as exc:
-            raise HorizonMcpError(
+            raise DaybreakMcpError(
                 code="HZ_STAGE_NOT_FOUND",
                 message=f"run_id={run_id} is missing stage artifact: {stage}",
                 details={"run_id": run_id, "stage": stage},
@@ -125,7 +125,7 @@ class HorizonPipelineService:
         try:
             markdown = self.run_store.load_summary(run_id, language)
         except FileNotFoundError as exc:
-            raise HorizonMcpError(
+            raise DaybreakMcpError(
                 code="HZ_SUMMARY_NOT_FOUND",
                 message=f"run_id={run_id} is missing summary for language={language}.",
                 details={"run_id": run_id, "language": language},
@@ -138,19 +138,19 @@ class HorizonPipelineService:
 
     def get_effective_config(
         self,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
         sources: list[str] | None = None,
     ) -> dict[str, Any]:
         """Return effective config after optional source filtering."""
 
         ctx, selected_sources, unknown_sources = self._build_context(
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         )
         return {
-            "horizon_path": str(ctx.horizon_path),
+            "daybreak_path": str(ctx.daybreak_path),
             "config_path": str(ctx.config_path),
             "selected_sources": selected_sources,
             "unknown_sources": unknown_sources,
@@ -159,13 +159,13 @@ class HorizonPipelineService:
 
     async def validate_config(
         self,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
         sources: list[str] | None = None,
         check_env: bool = True,
     ) -> dict[str, Any]:
         ctx, selected_sources, unknown_sources = self._build_context(
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         )
@@ -188,7 +188,7 @@ class HorizonPipelineService:
                     missing_env.append(pwd_key)
 
         return {
-            "horizon_path": str(ctx.horizon_path),
+            "daybreak_path": str(ctx.daybreak_path),
             "config_path": str(ctx.config_path),
             "ai": {
                 "provider": ctx.config.ai.provider.value,
@@ -211,15 +211,15 @@ class HorizonPipelineService:
         self,
         hours: int = 24,
         run_id: str | None = None,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
         sources: list[str] | None = None,
     ) -> dict[str, Any]:
         if hours <= 0:
-            raise HorizonMcpError(code="HZ_INVALID_INPUT", message="hours must be greater than 0.")
+            raise DaybreakMcpError(code="HZ_INVALID_INPUT", message="hours must be greater than 0.")
 
         ctx, selected_sources, unknown_sources = self._build_context(
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         )
@@ -237,7 +237,7 @@ class HorizonPipelineService:
         meta = self.run_store.update_meta(
             run_id,
             {
-                "horizon_path": str(ctx.horizon_path),
+                "daybreak_path": str(ctx.daybreak_path),
                 "config_path": str(ctx.config_path),
                 "hours": hours,
                 "since": since.isoformat(),
@@ -261,18 +261,18 @@ class HorizonPipelineService:
         self,
         run_id: str,
         source_stage: str = "raw",
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
     ) -> dict[str, Any]:
         items, ctx = self._load_stage_items(
             run_id=run_id,
             stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
         if not items:
-            raise HorizonMcpError(code="HZ_EMPTY_INPUT", message="No items available for scoring.")
+            raise DaybreakMcpError(code="HZ_EMPTY_INPUT", message="No items available for scoring.")
 
         ai_client = ctx.runtime.create_ai_client(ctx.config.ai)
         analyzer = ctx.runtime.ContentAnalyzer(ai_client)
@@ -306,13 +306,13 @@ class HorizonPipelineService:
         threshold: float | None = None,
         source_stage: str = "scored",
         topic_dedup: bool = True,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
     ) -> dict[str, Any]:
         items, ctx = self._load_stage_items(
             run_id=run_id,
             stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
@@ -357,18 +357,18 @@ class HorizonPipelineService:
         self,
         run_id: str,
         source_stage: str = "filtered",
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
     ) -> dict[str, Any]:
         items, ctx = self._load_stage_items(
             run_id=run_id,
             stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
         if not items:
-            raise HorizonMcpError(code="HZ_EMPTY_INPUT", message="No items available for enrichment.")
+            raise DaybreakMcpError(code="HZ_EMPTY_INPUT", message="No items available for enrichment.")
 
         ai_client = ctx.runtime.create_ai_client(ctx.config.ai)
         enricher = ctx.runtime.ContentEnricher(ai_client)
@@ -401,15 +401,15 @@ class HorizonPipelineService:
         run_id: str,
         language: str = "zh",
         source_stage: str | None = None,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
-        save_to_horizon_data: bool = False,
+        save_to_daybreak_data: bool = False,
     ) -> dict[str, Any]:
         stage = source_stage or self._pick_summary_stage(run_id)
         items, ctx = self._load_stage_items(
             run_id=run_id,
             stage=stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
@@ -417,7 +417,7 @@ class HorizonPipelineService:
         date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
         summarizer = ctx.runtime.DailySummarizer()
-        summary = await summarizer.generate_summary(
+        summary = summarizer.generate_summary(
             items,
             date_str,
             total_fetched,
@@ -426,7 +426,7 @@ class HorizonPipelineService:
 
         run_summary_path = self.run_store.save_summary(run_id, language, summary)
         published_path = None
-        if save_to_horizon_data:
+        if save_to_daybreak_data:
             storage = make_storage(ctx.runtime, ctx.config_path)
             published_path = storage.save_daily_summary(date_str, summary, language=language)
 
@@ -457,16 +457,16 @@ class HorizonPipelineService:
         hours: int = 24,
         languages: list[str] | None = None,
         threshold: float | None = None,
-        horizon_path: str | None = None,
+        daybreak_path: str | None = None,
         config_path: str | None = None,
         sources: list[str] | None = None,
         enrich: bool = True,
         topic_dedup: bool = True,
-        save_to_horizon_data: bool = False,
+        save_to_daybreak_data: bool = False,
     ) -> dict[str, Any]:
         fetch_result = await self.fetch_items(
             hours=hours,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         )
@@ -474,7 +474,7 @@ class HorizonPipelineService:
 
         score_result = await self.score_items(
             run_id=run_id,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
@@ -482,7 +482,7 @@ class HorizonPipelineService:
             run_id=run_id,
             threshold=threshold,
             topic_dedup=topic_dedup,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         )
 
@@ -492,13 +492,13 @@ class HorizonPipelineService:
             enrich_result = await self.enrich_items(
                 run_id=run_id,
                 source_stage="filtered",
-                horizon_path=horizon_path,
+                daybreak_path=daybreak_path,
                 config_path=config_path,
             )
             stage_for_summary = "enriched"
 
         ctx, _, _ = self._build_context(
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         )
@@ -510,9 +510,9 @@ class HorizonPipelineService:
                 run_id=run_id,
                 language=lang,
                 source_stage=stage_for_summary,
-                horizon_path=horizon_path,
+                daybreak_path=daybreak_path,
                 config_path=config_path,
-                save_to_horizon_data=save_to_horizon_data,
+                save_to_daybreak_data=save_to_daybreak_data,
             )
             summaries.append(summary_result)
 
@@ -528,19 +528,19 @@ class HorizonPipelineService:
 
     def _build_context(
         self,
-        horizon_path: str | None,
+        daybreak_path: str | None,
         config_path: str | None,
         sources: list[str] | None,
     ) -> tuple[PipelineContext, list[str], list[str]]:
-        resolved_horizon = resolve_horizon_path(horizon_path)
-        runtime = load_runtime(resolved_horizon)
-        resolved_config = resolve_config_path(resolved_horizon, config_path)
+        resolved_daybreak = resolve_daybreak_path(daybreak_path)
+        runtime = load_runtime(resolved_daybreak)
+        resolved_config = resolve_config_path(resolved_daybreak, config_path)
         config = load_config(runtime, resolved_config)
         effective_config, selected_sources, unknown_sources = apply_source_filter(config, sources)
 
         return (
             PipelineContext(
-                horizon_path=resolved_horizon,
+                daybreak_path=resolved_daybreak,
                 config_path=resolved_config,
                 runtime=runtime,
                 config=effective_config,
@@ -553,14 +553,14 @@ class HorizonPipelineService:
         self,
         run_id: str,
         stage: str,
-        horizon_path: str | None,
+        daybreak_path: str | None,
         config_path: str | None,
     ) -> tuple[list[Any], PipelineContext]:
-        ctx, _, _ = self._build_context(horizon_path=horizon_path, config_path=config_path, sources=None)
+        ctx, _, _ = self._build_context(daybreak_path=daybreak_path, config_path=config_path, sources=None)
         try:
             payload = self.run_store.load_items(run_id, stage)
         except FileNotFoundError as exc:
-            raise HorizonMcpError(
+            raise DaybreakMcpError(
                 code="HZ_STAGE_NOT_FOUND",
                 message=f"run_id={run_id} is missing stage artifact: {stage}",
                 details={"run_id": run_id, "stage": stage},
@@ -572,7 +572,7 @@ class HorizonPipelineService:
         for stage in ("enriched", "filtered", "scored", "raw"):
             if self.run_store.has_stage(run_id, stage):
                 return stage
-        raise HorizonMcpError(
+        raise DaybreakMcpError(
             code="HZ_STAGE_NOT_FOUND",
             message=f"run_id={run_id} has no usable stage for summary generation.",
             details={"run_id": run_id},

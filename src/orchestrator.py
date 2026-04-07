@@ -118,7 +118,7 @@ class DaybreakOrchestrator:
             # 7. Generate and save daily summaries for each configured language
             today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
             for lang in self.config.ai.languages:
-                summary = await self._generate_summary(important_items, today, len(all_items), language=lang)
+                summary = self._generate_summary(important_items, today, len(all_items), language=lang)
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
@@ -491,7 +491,7 @@ class DaybreakOrchestrator:
 
         return await analyzer.analyze_batch(items)
 
-    async def _generate_summary(
+    def _generate_summary(
         self,
         items: List[ContentItem],
         date: str,
@@ -513,4 +513,4 @@ class DaybreakOrchestrator:
 
         summarizer = DailySummarizer()
 
-        return await summarizer.generate_summary(items, date, total_fetched, language=language)
+        return summarizer.generate_summary(items, date, total_fetched, language=language)

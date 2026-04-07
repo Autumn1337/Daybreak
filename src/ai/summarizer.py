@@ -63,7 +63,7 @@ class DailySummarizer:
     def __init__(self):
         pass
 
-    async def generate_summary(
+    def generate_summary(
         self,
         items: List[ContentItem],
         date: str,
