@@ -3,13 +3,13 @@ layout: default
 title: Source Presets
 ---
 
-# Horizon
+# Daybreak
 
 <div id="lang-zh" class="lang-section" markdown="1">
 
 ## 预设信息源库
 
-Horizon 内置了一套精心整理的信息源预设库，覆盖多个技术领域。运行 `horizon-wizard` 向导时，系统会根据你的兴趣自动匹配合适的源。
+Daybreak 内置了一套精心整理的信息源预设库，覆盖多个技术领域。运行 `daybreak-wizard` 向导时，系统会根据你的兴趣自动匹配合适的源。
 
 你也可以直接浏览下方列表，手动将感兴趣的源添加到 `data/config.json`。
 
@@ -91,7 +91,7 @@ Horizon 内置了一套精心整理的信息源预设库，覆盖多个技术领
 
 我们非常欢迎社区贡献！如果你有优质的信息源想要分享：
 
-1. Fork [Horizon 仓库](https://github.com/thysrael/Horizon)
+1. Fork [Daybreak 仓库](https://github.com/Autumn1337/Daybreak)
 2. 编辑 `data/presets.json`，在合适的领域下添加你的源
 3. 提交 Pull Request
 
@@ -125,7 +125,7 @@ Horizon 内置了一套精心整理的信息源预设库，覆盖多个技术领
 
 ## Source Preset Library
 
-Horizon includes a curated library of information source presets across multiple technology domains. When you run the `horizon-wizard` wizard, it automatically matches sources to your interests.
+Daybreak includes a curated library of information source presets across multiple technology domains. When you run the `daybreak-wizard` wizard, it automatically matches sources to your interests.
 
 You can also browse the list below and manually add sources to your `data/config.json`.
 
@@ -207,7 +207,7 @@ You can also browse the list below and manually add sources to your `data/config
 
 We welcome community contributions! If you have high-quality sources to share:
 
-1. Fork the [Horizon repository](https://github.com/thysrael/Horizon)
+1. Fork the [Daybreak repository](https://github.com/Autumn1337/Daybreak)
 2. Edit `data/presets.json` and add your source under the appropriate domain
 3. Submit a Pull Request
 

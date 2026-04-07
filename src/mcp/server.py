@@ -1,4 +1,4 @@
-"""MCP server entrypoint for Horizon."""
+"""MCP server entrypoint for Daybreak."""
 
 from __future__ import annotations
 
@@ -8,12 +8,12 @@ from typing import Any, Awaitable, Callable
 
 from mcp.server.fastmcp import FastMCP
 
-from .errors import HorizonMcpError
-from .service import HorizonPipelineService
+from .errors import DaybreakMcpError
+from .service import DaybreakPipelineService
 
 
-mcp = FastMCP(name="horizon-mcp")
-service = HorizonPipelineService()
+mcp = FastMCP(name="daybreak-mcp")
+service = DaybreakPipelineService()
 
 SERVER_STARTED_AT = datetime.now(timezone.utc).isoformat()
 METRICS: dict[str, Any] = {
@@ -43,7 +43,7 @@ def _ok(tool: str, data: dict[str, Any], duration_ms: float | None = None) -> di
 
 
 def _err(tool: str, error: Exception, duration_ms: float | None = None) -> dict[str, Any]:
-    if isinstance(error, HorizonMcpError):
+    if isinstance(error, DaybreakMcpError):
         code = error.code
         message = error.message
         details = error.details
@@ -130,17 +130,17 @@ def _metrics_snapshot() -> dict[str, Any]:
 
 @mcp.tool()
 async def hz_validate_config(
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
     sources: list[str] | None = None,
     check_env: bool = True,
 ) -> dict[str, Any]:
-    """Validate Horizon config and required environment variables."""
+    """Validate Daybreak config and required environment variables."""
 
     return await _run_tool(
         "hz_validate_config",
         lambda: service.validate_config(
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
             check_env=check_env,
@@ -152,7 +152,7 @@ async def hz_validate_config(
 async def hz_fetch_items(
     hours: int = 24,
     run_id: str | None = None,
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
     sources: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -163,7 +163,7 @@ async def hz_fetch_items(
         lambda: service.fetch_items(
             hours=hours,
             run_id=run_id,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
         ),
@@ -174,7 +174,7 @@ async def hz_fetch_items(
 async def hz_score_items(
     run_id: str,
     source_stage: str = "raw",
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
 ) -> dict[str, Any]:
     """Score a stage into the scored stage."""
@@ -184,7 +184,7 @@ async def hz_score_items(
         lambda: service.score_items(
             run_id=run_id,
             source_stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         ),
     )
@@ -196,7 +196,7 @@ async def hz_filter_items(
     threshold: float | None = None,
     source_stage: str = "scored",
     topic_dedup: bool = True,
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
 ) -> dict[str, Any]:
     """Filter scored items into the filtered stage."""
@@ -208,7 +208,7 @@ async def hz_filter_items(
             threshold=threshold,
             source_stage=source_stage,
             topic_dedup=topic_dedup,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         ),
     )
@@ -218,7 +218,7 @@ async def hz_filter_items(
 async def hz_enrich_items(
     run_id: str,
     source_stage: str = "filtered",
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
 ) -> dict[str, Any]:
     """Enrich filtered items into the enriched stage."""
@@ -228,7 +228,7 @@ async def hz_enrich_items(
         lambda: service.enrich_items(
             run_id=run_id,
             source_stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
         ),
     )
@@ -239,9 +239,9 @@ async def hz_generate_summary(
     run_id: str,
     language: str = "zh",
     source_stage: str | None = None,
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
-    save_to_horizon_data: bool = False,
+    save_to_daybreak_data: bool = False,
 ) -> dict[str, Any]:
     """Generate a markdown summary from a stage."""
 
@@ -251,9 +251,9 @@ async def hz_generate_summary(
             run_id=run_id,
             language=language,
             source_stage=source_stage,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
-            save_to_horizon_data=save_to_horizon_data,
+            save_to_daybreak_data=save_to_daybreak_data,
         ),
     )
 
@@ -263,12 +263,12 @@ async def hz_run_pipeline(
     hours: int = 24,
     languages: list[str] | None = None,
     threshold: float | None = None,
-    horizon_path: str | None = None,
+    daybreak_path: str | None = None,
     config_path: str | None = None,
     sources: list[str] | None = None,
     enrich: bool = True,
     topic_dedup: bool = True,
-    save_to_horizon_data: bool = False,
+    save_to_daybreak_data: bool = False,
 ) -> dict[str, Any]:
     """Run fetch -> score -> filter -> enrich -> summarize in one call."""
 
@@ -278,12 +278,12 @@ async def hz_run_pipeline(
             hours=hours,
             languages=languages,
             threshold=threshold,
-            horizon_path=horizon_path,
+            daybreak_path=daybreak_path,
             config_path=config_path,
             sources=sources,
             enrich=enrich,
             topic_dedup=topic_dedup,
-            save_to_horizon_data=save_to_horizon_data,
+            save_to_daybreak_data=save_to_daybreak_data,
         ),
     )
 
@@ -398,66 +398,66 @@ def hz_get_metrics() -> dict[str, Any]:
         return payload
 
 
-@mcp.resource("horizon://server/info")
+@mcp.resource("daybreak://server/info")
 def r_server_info() -> dict[str, Any]:
     """Server metadata resource."""
 
     return {
-        "name": "horizon-mcp",
+        "name": "daybreak-mcp",
         "started_at": SERVER_STARTED_AT,
         "runs_root": str(service.runs_root.resolve()),
     }
 
 
-@mcp.resource("horizon://metrics")
+@mcp.resource("daybreak://metrics")
 def r_metrics() -> dict[str, Any]:
     """In-memory metrics snapshot."""
 
-    return _resource_result("horizon://metrics", _metrics_snapshot)
+    return _resource_result("daybreak://metrics", _metrics_snapshot)
 
 
-@mcp.resource("horizon://runs")
+@mcp.resource("daybreak://runs")
 def r_runs() -> dict[str, Any]:
     """Recent run list."""
 
-    return _resource_result("horizon://runs", lambda: service.list_runs(limit=30))
+    return _resource_result("daybreak://runs", lambda: service.list_runs(limit=30))
 
 
-@mcp.resource("horizon://runs/{run_id}/meta")
+@mcp.resource("daybreak://runs/{run_id}/meta")
 def r_run_meta(run_id: str) -> dict[str, Any]:
     """Run metadata resource."""
 
     return _resource_result(
-        f"horizon://runs/{run_id}/meta",
+        f"daybreak://runs/{run_id}/meta",
         lambda: service.get_run_meta(run_id),
     )
 
 
-@mcp.resource("horizon://runs/{run_id}/items/{stage}")
+@mcp.resource("daybreak://runs/{run_id}/items/{stage}")
 def r_run_items(run_id: str, stage: str) -> dict[str, Any]:
     """Run stage items resource."""
 
     return _resource_result(
-        f"horizon://runs/{run_id}/items/{stage}",
+        f"daybreak://runs/{run_id}/items/{stage}",
         lambda: service.get_run_stage(run_id=run_id, stage=stage, max_items=200),
     )
 
 
-@mcp.resource("horizon://runs/{run_id}/summary/{language}")
+@mcp.resource("daybreak://runs/{run_id}/summary/{language}")
 def r_run_summary(run_id: str, language: str) -> dict[str, Any]:
     """Run summary resource."""
 
     return _resource_result(
-        f"horizon://runs/{run_id}/summary/{language}",
+        f"daybreak://runs/{run_id}/summary/{language}",
         lambda: service.get_run_summary(run_id=run_id, language=language),
     )
 
 
-@mcp.resource("horizon://config/effective")
+@mcp.resource("daybreak://config/effective")
 def r_effective_config() -> dict[str, Any]:
-    """Effective default config resolved from local Horizon path."""
+    """Effective default config resolved from local Daybreak path."""
 
-    return _resource_result("horizon://config/effective", service.get_effective_config)
+    return _resource_result("daybreak://config/effective", service.get_effective_config)
 
 
 def main() -> None:

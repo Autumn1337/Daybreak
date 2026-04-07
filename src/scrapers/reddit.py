@@ -14,7 +14,7 @@ from ..models import ContentItem, RedditConfig, RedditSubredditConfig, RedditUse
 logger = logging.getLogger(__name__)
 
 REDDIT_BASE = "https://www.reddit.com"
-USER_AGENT = "Horizon/1.0 (content aggregator; +https://github.com/thysrael/horizon)"
+USER_AGENT = "Daybreak/1.0 (content aggregator; +https://github.com/Autumn1337/Daybreak)"
 
 
 class RedditScraper(BaseScraper):

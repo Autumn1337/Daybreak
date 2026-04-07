@@ -1,8 +1,8 @@
-# HorizonHub Product Design Document
+# DaybreakHub Product Design Document
 
 ## Positioning
 
-**One-sentence positioning**: The information source marketplace for the Horizon ecosystem—driven by real community usage data for discovery, recommendation, and quality assessment.
+**One-sentence positioning**: The information source marketplace for the Daybreak ecosystem—driven by real community usage data for discovery, recommendation, and quality assessment.
 
 **Difference from Competitors**:
 
@@ -11,9 +11,9 @@
 | RSSHub | Turns websites without RSS into RSS (Pipe) | No quality assessment, no recommendations |
 | Feedly | RSS Reader with discovery features | No AI filtering, no personalized recommendations |
 | HN / Reddit | Community-driven content aggregation | Fixed sources, user cannot customize |
-| **HorizonHub** | **Data-driven source recommendation & quality assessment** | **No content hosting, not a reader** |
+| **DaybreakHub** | **Data-driven source recommendation & quality assessment** | **No content hosting, not a reader** |
 
-**Core Moat**: The daily operation of every Horizon user generates quality data for information sources (AI scores, signal-to-noise ratio, output frequency). When aggregated in the Hub, this data forms a **dynamic quality profile** that no static recommendation list can provide.
+**Core Moat**: The daily operation of every Daybreak user generates quality data for information sources (AI scores, signal-to-noise ratio, output frequency). When aggregated in the Hub, this data forms a **dynamic quality profile** that no static recommendation list can provide.
 
 ---
 
@@ -23,7 +23,7 @@
 ┌──────────────────────────────────────────────────┐
 │                    User Local                    │
 │                                                  │
-│  horizon-wizard (TUI)       Horizon CLI          │
+│  daybreak-wizard (TUI)       Daybreak CLI          │
 │  ┌────────────────┐         ┌────────────────┐   │
 │  │ Browse/Search  │         │ Fetch -> AI    │   │
 │  │ Add/Remove     │──Write─▶│ Score ->       │   │
@@ -34,7 +34,7 @@
            │ Report Ops Events        │ Report Quality Data
            ▼                          ▼
 ┌──────────────────────────────────────────────────┐
-│                 HorizonHub Server                │
+│                 DaybreakHub Server                │
 │                                                  │
 │  ┌───────────┐  ┌─────────────┐  ┌────────────┐  │
 │  │ Source DB │  │ Rank Engine │  │ Recommender│  │
@@ -49,7 +49,7 @@
 
 Two core components:
 - **Hub Server**: Data center + Web frontend, receiving reports, storing statistics, providing APIs and web pages.
-- **Local Client (horizon-wizard)**: The sole entry point for users to manage information sources; every operation naturally generates data.
+- **Local Client (daybreak-wizard)**: The sole entry point for users to manage information sources; every operation naturally generates data.
 
 ---
 
@@ -113,7 +113,7 @@ Hub Server
 
 **Channels**:
 - Hub Web Form (most intuitive)
-- Local Client Submission (one-click via `horizon-wizard`)
+- Local Client Submission (one-click via `daybreak-wizard`)
 
 ### Intelligent Recommendation (Recommend)
 
@@ -134,7 +134,7 @@ After users select sources on the Hub website:
 
 - Generate `config.json` snippet → Copy to clipboard
 - Download full config file
-- Generate `horizon-wizard` command → One-click import via terminal
+- Generate `daybreak-wizard` command → One-click import via terminal
 
 ### Contributor System (Community)
 
@@ -164,7 +164,7 @@ Hub server continuously tracks active user trends for each source. If usage drop
 
 **User Feedback Collection** (Option B — Active):
 
-When a user deletes or disables a source via `horizon-wizard`, a popup asks for optional feedback:
+When a user deletes or disables a source via `daybreak-wizard`, a popup asks for optional feedback:
 
 ```
 You removed "Qiabit", can you tell us why? (Optional, Enter to skip)
@@ -183,9 +183,9 @@ Reported to the Hub, integrated with decay data for comprehensive judgment.
 
 ### Analogy
 
-If the Horizon ecosystem is viewed as a **Distributed Agent Operating System**.
+If the Daybreak ecosystem is viewed as a **Distributed Agent Operating System**.
 
-A single Horizon instance is like a "standalone machine" managing one user's information flow. HorizonHub acts as the **Control Plane** that coordinates all users' Agents into a whole, allowing decentralized individual judgments to converge into collective intelligence.
+A single Daybreak instance is like a "standalone machine" managing one user's information flow. DaybreakHub acts as the **Control Plane** that coordinates all users' Agents into a whole, allowing decentralized individual judgments to converge into collective intelligence.
 
 ### Why "Emergence"?
 

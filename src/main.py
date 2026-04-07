@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from rich.console import Console
 
 from .storage.manager import StorageManager
-from .orchestrator import HorizonOrchestrator
+from .orchestrator import DaybreakOrchestrator
 
 
 console = Console()
@@ -67,7 +67,7 @@ def main():
             sys.exit(1)
 
         # Create and run orchestrator
-        orchestrator = HorizonOrchestrator(config, storage)
+        orchestrator = DaybreakOrchestrator(config, storage)
         asyncio.run(orchestrator.run(force_hours=args.hours))
 
     except KeyboardInterrupt:

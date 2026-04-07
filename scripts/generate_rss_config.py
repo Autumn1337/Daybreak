@@ -1,4 +1,4 @@
-"""Convert OPML file to Horizon config.json RSS entries."""
+"""Convert OPML file to Daybreak config.json RSS entries."""
 
 import json
 import re

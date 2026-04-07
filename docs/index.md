@@ -3,16 +3,16 @@ layout: default
 title: Home
 ---
 
-# Horizon
+# Daybreak
 
 <div id="lang-zh" class="lang-section" markdown="1">
 
-欢迎来到 [Horizon](https://github.com/thysrael/Horizon)，一个 AI 驱动的信息聚合系统。
+欢迎来到 [Daybreak](https://github.com/Autumn1337/Daybreak)，一个 AI 驱动的信息聚合系统。
 
 ## 文档
 
 - [配置指南](configuration) — AI 提供商、信息源、过滤规则与环境变量替换
-- [信息源采集器](scrapers) — Horizon 如何从 GitHub、Hacker News、RSS、Reddit 采集内容
+- [信息源采集器](scrapers) — Daybreak 如何从 GitHub、Hacker News、RSS、Reddit 采集内容
 - [评分系统](scoring) — 基于 AI 的内容分析与 0-10 评分体系
 - [预设信息源库](presets) — 浏览内置源、贡献你的信息源
 
@@ -33,12 +33,12 @@ title: Home
 
 <div id="lang-en" class="lang-section" markdown="1">
 
-Welcome to [Horizon](https://github.com/thysrael/Horizon), an AI-driven information aggregation system.
+Welcome to [Daybreak](https://github.com/Autumn1337/Daybreak), an AI-driven information aggregation system.
 
 ## Documentation
 
 - [Configuration Guide](configuration) — AI providers, information sources, filtering, and environment variable substitution
-- [Source Scrapers](scrapers) — How Horizon collects content from GitHub, Hacker News, RSS, and Reddit
+- [Source Scrapers](scrapers) — How Daybreak collects content from GitHub, Hacker News, RSS, and Reddit
 - [Scoring System](scoring) — AI-based content analysis and the 0-10 scoring scale
 - [Source Presets](presets) — Browse built-in sources, contribute yours
 

@@ -5,7 +5,7 @@ title: Configuration Guide
 
 # Configuration Guide
 
-Horizon is configured through two files: a `.env` file for API keys and a `data/config.json` file for sources, AI provider, and filtering options.
+Daybreak is configured through two files: a `.env` file for API keys and a `data/config.json` file for sources, AI provider, and filtering options.
 
 ## AI Providers
 

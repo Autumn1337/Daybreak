@@ -1,7 +1,7 @@
 """Lightweight token usage tracker shared across AI clients.
 
 This module keeps a simple in-memory counter of tokens used during a single
-Horizon run, so the orchestrator can print a summary at the end.
+Daybreak run, so the orchestrator can print a summary at the end.
 """
 
 from __future__ import annotations

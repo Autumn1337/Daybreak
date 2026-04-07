@@ -1,5 +1,5 @@
 [project]
-name = "horizon"
+name = "daybreak"
 version = "0.1.0"
 description = "AI-driven information aggregation system for tracking academic and social trends"
 readme = "README.md"
@@ -29,9 +29,9 @@ dev = [
 ]
 
 [project.scripts]
-horizon = "src.main:main"
-horizon-mcp = "src.mcp.server:main"
-horizon-wizard = "src.setup.wizard:main"
+daybreak = "src.main:main"
+daybreak-mcp = "src.mcp.server:main"
+daybreak-wizard = "src.setup.wizard:main"
 
 [build-system]
 requires = ["hatchling"]

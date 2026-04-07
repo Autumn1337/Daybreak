@@ -1,7 +1,7 @@
-/* ===== Horizon Custom Styles ===== */
+/* ===== Daybreak Custom Styles ===== */
 
-/* --- CSS Variables & Dark Mode (Horizon Dawn) --- */
-/* Palette derived from horizon-header.svg sunrise:
+/* --- CSS Variables & Dark Mode (Daybreak Dawn) --- */
+/* Palette derived from daybreak-header.svg sunrise:
    #312e81 deep indigo · #be185d rose · #f97316 orange · #fbbf24 gold
    #4c1d95 mountain purple · #701a75 distant purple                  */
 :root {
@@ -59,7 +59,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800 !important;
 }
 
-/* Override Cayman header gradient — Horizon sunrise from SVG */
+/* Override Cayman header gradient — Daybreak sunrise from SVG */
 .page-header {
   background: linear-gradient(120deg, #312e81, #be185d, #f97316) !important;
 }
