@@ -2,6 +2,7 @@
 
 import asyncio
 import calendar
+import hashlib
 import logging
 import os
 import re
@@ -102,13 +103,13 @@ class RSSScraper(BaseScraper):
                 # Generate unique ID from feed URL and entry ID
                 feed_id = str(source.url).split("//")[1].replace("/", "_")
                 entry_id = entry.get("id", entry.get("link", ""))
-                unique_id = f"{feed_id}:{hash(entry_id)}"
+                unique_id = f"{feed_id}:{hashlib.md5(entry_id.encode()).hexdigest()[:12]}"
 
                 # Extract content
                 content = self._extract_content(entry)
 
                 item = ContentItem(
-                    id=self._generate_id("rss", feed_id, str(hash(entry_id))),
+                    id=self._generate_id("rss", feed_id, hashlib.md5(entry_id.encode()).hexdigest()[:12]),
                     source_type=SourceType.RSS,
                     title=entry.get("title", "Untitled"),
                     url=entry.get("link", str(source.url)),
