@@ -644,10 +644,10 @@
     "email_address": "your-email@gmail.com",
     "password_env": "EMAIL_PASSWORD",
     "sender_name": "Daybreak Daily",
-    "enabled": true
+    "enabled": false
   },
   "feishu": {
     "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/your-webhook-id",
-    "enabled": true
+    "enabled": false
   }
 }
