@@ -28,7 +28,7 @@ from .ai.enricher import ContentEnricher
 from .ai.tokens import get_usage_snapshot
 
 
-class HorizonOrchestrator:
+class DaybreakOrchestrator:
     """Orchestrates the complete workflow for content aggregation and analysis."""
 
     def __init__(self, config: Config, storage: StorageManager):
@@ -116,7 +116,7 @@ class HorizonOrchestrator:
             # await self._enrich_important_items(important_items)
 
             # 7. Generate and save daily summaries for each configured language
-            today = datetime.utcnow().strftime("%Y-%m-%d")
+            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
             for lang in self.config.ai.languages:
                 summary = await self._generate_summary(important_items, today, len(all_items), language=lang)
 
