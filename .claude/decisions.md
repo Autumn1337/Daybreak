@@ -32,3 +32,15 @@
 选项：A（保持串行，减少 API 并发压力）/ B（asyncio.gather + Semaphore 控制并发度）
 选择：B，默认并发度 8
 理由：评分是 pipeline 最慢环节（N 条内容 = N 次串行 API 调用），并发化预期 5-10x 提速。Semaphore 限制并发度防止 API 过载。concurrency 参数可在调用时调整。
+
+## 2026-04-07: 配置文件分离
+
+选项：A（config.json 保持 git 跟踪，用占位符）/ B（分离为 example + real，real 加入 gitignore）
+选择：B
+理由：config.json 包含真实代理地址和 webhook URL，不应提交到公开仓库。config.example.json 作为模板提交，config.json gitignored 存放真实配置。
+
+## 2026-04-07: AI 评分并发度调整为 5
+
+选项：3 / 5 / 8 / 12
+选择：5
+理由：基准测试显示代理 muxufo.com 在并发 5 时最快（3.9s）且零错误；8 略慢（4.6s）；12 触发严重 rate limit（47.5s）。默认值从 8 调为 5。

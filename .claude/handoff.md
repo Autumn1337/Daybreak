@@ -1,45 +1,66 @@
 # 项目交接文档
-最后更新：2026-04-07
+最后更新：2026-04-07（架构清理 + 运行验证会话结束）
 
 ## 项目概况
-Daybreak — AI 驱动每日技术情报系统。架构清理完成，11 个改动已提交到 master，处于可发布状态。
+Daybreak — AI 驱动每日技术情报系统。架构清理已完成，pipeline 已验证可正常运行。
 
 ## 当前状态
-本次会话完成架构清理（P0 正确性修复 + P1 性能 + P2 可维护性），11 个 commit 已提交。27/27 测试通过。
+架构清理 11 个 commit 已 push 到 master，pipeline 实际运行验证通过：
+- 51 items 抓取 → 42 items scored ≥ 6.0 → 报告生成成功
+- Token 用量正常：82,359 tokens（input 44k, output 38k）
+- 并发评分可用，默认并发度调整为 5（代理 muxufo.com 的甜点）
 
-## 关键决策（仍然有效的）
-- 双仓库合并为单一 horizon-public 仓库，Daybreak 品牌，密钥通过 .env 隔离
-- MCP breaking changes 不加兼容 shim（个人项目，无外部消费者）
-- AI 评分并发化：asyncio.gather + Semaphore(8)，默认并发度 8，可在调用时调整
-- Jekyll front matter 写入归属 StorageManager.save_docs_post()，不在 orchestrator 处理
-- config.json 中 email/feishu 默认 enabled: false，避免 CI 噪音
-- HZ_ 错误码前缀和 hz_ MCP tool 前缀保留：内部标识符，不影响品牌
+### 本次完成的改动（12 commits on master）
+
+**P0 正确性修复：**
+1. `datetime.utcnow` → `datetime.now(timezone.utc)`（models.py, orchestrator.py）
+2. RSS ID 稳定性：`hash()` → `hashlib.md5().hexdigest()[:12]`（rss.py）
+3. AliClient 补齐 `record_usage` 调用（client.py）
+4. CI deploy-docs.yml: `checkout@v6` → `@v4`
+5. config.example.json: 占位符 email/feishu 改为 `enabled: false`
+
+**P1 性能：**
+6. AI 评分并发化：`analyze_batch` 从串行改为 `asyncio.gather + Semaphore(5)`
+
+**P2 可维护性：**
+7. `DailySummarizer.generate_summary` 从 async 改为 sync
+8. Token 计数器每次 pipeline 运行前 `reset_usage()`
+9. Jekyll front matter 写入迁移到 `StorageManager.save_docs_post()`
+10. MCP service.py 删除冗余 `asyncio.iscoroutine` 检查
+11. `BaseScraper` config 类型标注修正为 `Any`
+
+**配置管理：**
+12. config.json 分离为 config.example.json（git 跟踪）+ config.json（gitignored）
+
+## 配置管理
+
+| 文件 | 内容 | git 跟踪 |
+|---|---|---|
+| `data/config.example.json` | 模板，占位符值 | 是 |
+| `data/config.json` | 真实配置（代理地址、webhook） | 否（.gitignore） |
+| `.env` | API keys | 否（.gitignore） |
+
+当前 config.json 状态：
+- AI: provider=openai, model=gemini-3-flash-preview, base_url=http://muxufo.com/v1
+- 飞书: enabled=true, webhook 已配置
+- 邮件: enabled=false（占位符地址）
+- 评分阈值: 6.0
 
 ## 已知问题
-- enrichment（背景知识补充）被禁用：每篇 2 次 AI + DuckDuckGo 搜索，太慢
-- ArXiv 周末无新提交时返回旧论文（已去掉 since 过滤，靠 API 排序取最新）
-- 36Kr / PH 没有精确时间戳，published_at 设为 now()，无法做 since 过滤
-- RSS 个别源 403 或超时正常（devblogs.microsoft.com 等）
-- uv.lock 在 package name 改为 daybreak 后可能过时，需要重新生成
-
-## 下一步（按优先级）
-1. push 到 GitHub remote（Autumn1337/Daybreak）
-2. 实际运行 `uv run daybreak --hours 24` 验证并发评分效果
-3. 验证 GitHub Pages 在 /Daybreak baseurl 下正常渲染
-4. 可选：补充 scraper/orchestrator 单元测试（P3）
-5. 可选：评分标准可配置化、飞书多语言（P4）
-
-## 关键文件
-- `src/ai/analyzer.py` — 并发评分核心，重写了 analyze_batch（asyncio.gather + Semaphore）
-- `src/orchestrator.py` — 主流程编排，去除 Jekyll 写入和 summarizer await，加 reset_usage
-- `src/storage/manager.py` — 新增 save_docs_post，负责 Jekyll front matter
-- `src/models.py` — fetched_at 使用 aware datetime（timezone.utc）
-- `src/scrapers/rss.py` — 确定性 hash（hashlib.md5，跨进程稳定）
-- `src/ai/client.py` — AliClient 补齐 record_usage 调用
-- `tests/test_analyzer_concurrency.py` — 并发功能测试（新增）
+- 代理并发度超过 5 会触发 rate limit，默认已调为 5
+- RSS 2 个源 403（rachelbythebay.com, tedunangst.com），是正常的
+- 品牌重命名的 docs/ 文件变更仍在 working tree 未提交（上次会话遗留）
 
 ## 验证方式
 ```bash
 cd /e/Newspaper/horizon-public
 uv run pytest tests/ -v    # 期望：27 passed
+uv run daybreak --hours 24  # 实际运行
 ```
+
+## 下一步（按优先级）
+1. 补充 scraper/orchestrator 单元测试（P3）
+2. 评分标准可配置化（从 prompt 提取到 config.json）
+3. 飞书消息多语言支持
+4. Enrichment 重新评估（只对 score ≥ 8.5 的条目做）
+5. 提交 working tree 中遗留的品牌重命名文件
