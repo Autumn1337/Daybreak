@@ -268,6 +268,13 @@ class AliClient(AIClient):
             max_tokens=max_tokens,
             response_format={"type": "json_object"}
         )
+        usage = getattr(response, "usage", None)
+        if usage is not None:
+            record_usage(
+                "ali",
+                input_tokens=getattr(usage, "prompt_tokens", 0),
+                output_tokens=getattr(usage, "completion_tokens", 0),
+            )
         return response.choices[0].message.content
 
 
