@@ -63,8 +63,8 @@ EMAIL_PASSWORD=your-app-password    # Gmail App Password（可选）
 {
   "ai": {
     "provider": "openai",           // openai / gemini / anthropic / ali
-    "model": "gemini-3-flash-preview",
-    "base_url": "http://your-proxy.com/v1",  // 代理地址，直连设为 null
+    "model": "gemini-2.5-flash",    // 模型名称
+    "base_url": null,               // 代理地址，直连填 null，代理填 "http://your-proxy.com/v1"
     "api_key_env": "GEMINI_API_KEY",
     "languages": ["zh"]             // 摘要语言
   },
@@ -72,9 +72,9 @@ EMAIL_PASSWORD=your-app-password    # Gmail App Password（可选）
     "ai_score_threshold": 6.0,      // 评分阈值，低于此分的文章被过滤
     "time_window_hours": 24
   },
-  "feishu": {
-    "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/your-id",
-    "enabled": true
+  "feishu": {                       // 飞书推送（可选）
+    "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/your-id",  // 群机器人 Webhook
+    "enabled": true                 // 是否启用
   }
 }
 ```
