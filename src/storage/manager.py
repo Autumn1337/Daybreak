@@ -15,8 +15,11 @@ class StorageManager:
         self.config_path = self.data_dir / "config.json"
         self.summaries_dir = self.data_dir / "summaries"
 
+        self.newspaper_dir = self.data_dir / "newspaper"
+
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.summaries_dir.mkdir(parents=True, exist_ok=True)
+        self.newspaper_dir.mkdir(parents=True, exist_ok=True)
 
     def load_config(self) -> Config:
         if not self.config_path.exists():
@@ -95,6 +98,13 @@ class StorageManager:
         dest = posts_dir / f"{date}-summary-{language}.md"
         dest.write_text(front_matter + content, encoding="utf-8")
         return dest
+
+    def save_newspaper_image(self, date: str, image_bytes: bytes, language: str = "zh") -> Path:
+        """Save newspaper PNG image to data/newspaper/."""
+        filename = f"daybreak-{date}-{language}.png"
+        filepath = self.newspaper_dir / filename
+        filepath.write_bytes(image_bytes)
+        return filepath
 
     def load_subscribers(self) -> list:
         """Loads the list of email subscribers."""

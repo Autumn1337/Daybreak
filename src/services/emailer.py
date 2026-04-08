@@ -2,22 +2,52 @@
 
 import imaplib
 import smtplib
+import socket as _socket_mod
 import email
 import os
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 from email.utils import parseaddr
-from typing import List
+from typing import List, Optional
+from urllib.parse import urlparse
 
 try:
     import markdown
 except ImportError:
     markdown = None
 
+from contextlib import contextmanager
+
 from ..models import EmailConfig
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def _proxy_socket():
+    """Temporarily route all sockets through HTTP CONNECT proxy if env vars are set."""
+    proxy_url = os.environ.get("HTTPS_PROXY") or os.environ.get("HTTP_PROXY")
+    if not proxy_url:
+        yield
+        return
+
+    try:
+        import socks
+    except ImportError:
+        logger.warning("PySocks not installed — cannot route SMTP through proxy")
+        yield
+        return
+
+    parsed = urlparse(proxy_url)
+    original = _socket_mod.socket
+    socks.set_default_proxy(socks.HTTP, parsed.hostname, parsed.port)
+    _socket_mod.socket = socks.socksocket
+    try:
+        yield
+    finally:
+        _socket_mod.socket = original
 
 
 class EmailManager:
@@ -147,9 +177,14 @@ class EmailManager:
             logger.error(f"Error checking subscriptions: {e}")
 
     def send_daily_summary(
-        self, summary_md: str, subject: str, subscribers: List[str]
+        self, summary_md: str, subject: str, subscribers: List[str],
+        newspaper_image: Optional[bytes] = None,
     ):
-        """Sends the daily summary to all subscribers."""
+        """Sends the daily summary to all subscribers.
+
+        If newspaper_image (PNG bytes) is provided, it is embedded inline
+        at the top of the HTML email via CID reference.
+        """
         if not self.config.enabled or not subscribers:
             return
 
@@ -159,7 +194,16 @@ class EmailManager:
             else f"<pre>{summary_md}</pre>"
         )
 
-        # Simple HTML wrapper for better presentation
+        newspaper_html = ""
+        if newspaper_image:
+            newspaper_html = (
+                '<div style="text-align:center; margin-bottom:20px;">'
+                '<img src="cid:newspaper" style="max-width:100%; height:auto;" '
+                'alt="Daybreak Daily">'
+                '</div>'
+                '<hr style="margin:20px 0;">'
+            )
+
         html_body = f"""
         <!DOCTYPE html>
         <html>
@@ -175,6 +219,7 @@ class EmailManager:
             </style>
         </head>
         <body>
+            {newspaper_html}
             {html_content}
             <div class="footer">
                 <p>Sent by {self.config.sender_name}</p>
@@ -185,23 +230,32 @@ class EmailManager:
         """
 
         try:
-            with smtplib.SMTP_SSL(
+            with _proxy_socket(), smtplib.SMTP_SSL(
                 self.config.smtp_server, self.config.smtp_port
             ) as server:
                 server.login(self.config.email_address, self.pwd)
 
                 for subscriber in subscribers:
-                    msg = MIMEMultipart("alternative")
+                    if newspaper_image:
+                        msg = MIMEMultipart("related")
+                        alt = MIMEMultipart("alternative")
+                        alt.attach(MIMEText(summary_md, "plain"))
+                        alt.attach(MIMEText(html_body, "html"))
+                        msg.attach(alt)
+                        img_part = MIMEImage(newspaper_image, _subtype="png")
+                        img_part.add_header("Content-ID", "<newspaper>")
+                        img_part.add_header(
+                            "Content-Disposition", "inline", filename="daybreak.png"
+                        )
+                        msg.attach(img_part)
+                    else:
+                        msg = MIMEMultipart("alternative")
+                        msg.attach(MIMEText(summary_md, "plain"))
+                        msg.attach(MIMEText(html_body, "html"))
+
                     msg["Subject"] = subject
                     msg["From"] = f"{self.config.sender_name} <{self.config.email_address}>"
                     msg["To"] = subscriber
-
-                    # Create plain text and HTML versions
-                    text_part = MIMEText(summary_md, "plain")
-                    html_part = MIMEText(html_body, "html")
-
-                    msg.attach(text_part)
-                    msg.attach(html_part)
 
                     try:
                         server.send_message(msg)
@@ -215,7 +269,7 @@ class EmailManager:
     def _send_reply(self, to_email: str, subject: str, body: str):
         """Helper to send a simple reply."""
         try:
-            with smtplib.SMTP_SSL(
+            with _proxy_socket(), smtplib.SMTP_SSL(
                 self.config.smtp_server, self.config.smtp_port
             ) as server:
                 server.login(self.config.email_address, self.pwd)

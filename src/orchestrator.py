@@ -150,12 +150,27 @@ class DaybreakOrchestrator:
                 except Exception as e:
                     self.console.print(f"[yellow]⚠️  Failed to copy {lang.upper()} summary to docs/: {e}[/yellow]\n")
 
+                # Render newspaper image
+                newspaper_image = None
+                try:
+                    from .ai.newspaper import NewspaperRenderer
+
+                    self.console.print(f"🗞️  Rendering {lang.upper()} newspaper image...")
+                    renderer = NewspaperRenderer()
+                    newspaper_image = renderer.render(important_items, today, len(all_items), language=lang)
+                    img_path = self.storage.save_newspaper_image(today, newspaper_image, language=lang)
+                    self.console.print(f"   Saved to: {img_path}\n")
+                except Exception as e:
+                    self.console.print(f"[yellow]⚠️  Newspaper rendering failed: {e}[/yellow]\n")
+
                 # Send email if configured
                 if self.email_manager and self.config.email and self.config.email.enabled:
                     self.console.print(f"📧 Sending {lang.upper()} email summary...")
                     subscribers = self.storage.load_subscribers()
                     subject = f"Daybreak Summary ({lang.upper()}) - {today}"
-                    self.email_manager.send_daily_summary(summary, subject, subscribers)
+                    self.email_manager.send_daily_summary(
+                        summary, subject, subscribers, newspaper_image=newspaper_image,
+                    )
 
             # Send Feishu notification if configured
             if self.config.feishu and self.config.feishu.enabled:
