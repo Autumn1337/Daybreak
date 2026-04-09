@@ -9,7 +9,7 @@ jobs:
   daily-summary:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Needed to commit changes
+      contents: write
 
     steps:
       - name: Checkout code
@@ -26,11 +26,37 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Generate runtime config
+        env:
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: |
+          cp data/config.example.json data/config.json
+          # Inject real values from secrets
+          jq --arg base_url "${AI_BASE_URL}" \
+             --arg feishu_url "${FEISHU_WEBHOOK_URL}" \
+             --arg email "${EMAIL_ADDRESS}" \
+             '
+             .ai.base_url = $base_url |
+             .feishu.webhook_url = $feishu_url |
+             .feishu.enabled = true |
+             .email.email_address = $email |
+             .email.enabled = true |
+             .filtering.max_items = 20 |
+             .filtering.enrichment_threshold = 8.0
+             ' data/config.json > data/config.tmp && mv data/config.tmp data/config.json
+
+      - name: Install fonts for newspaper rendering
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-cjk-extra >/dev/null 2>&1
+          fc-cache -f
+
       - name: Run Daybreak
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: uv run daybreak --hours 48
 
@@ -42,7 +68,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          keep_files: true  # Keep existing summaries on gh-pages branch
-          commit_message: "📝 Daily Summary: ${{ env.DATE }}"
+          keep_files: true
+          commit_message: "Daily Summary: ${{ env.DATE }}"
           publish_branch: gh-pages
           enable_jekyll: true
