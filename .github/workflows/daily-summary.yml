@@ -46,6 +46,8 @@ jobs:
              .filtering.max_items = 20 |
              .filtering.enrichment_threshold = 8.0
              ' data/config.json > data/config.tmp && mv data/config.tmp data/config.json
+          # Create subscribers list for email delivery
+          echo "[\"${EMAIL_ADDRESS}\"]" > data/subscribers.json
 
       - name: Install fonts for newspaper rendering
         run: |
