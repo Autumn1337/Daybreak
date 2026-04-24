@@ -12,7 +12,14 @@ from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 from ..models import ContentItem
-from .summarizer import CATEGORY_ORDER, _normalize_category
+from .summarizer import CATEGORY_ORDER
+
+
+def _normalize_category(category) -> str:
+    """Return a renderable category, falling back for unexpected model output."""
+    if category in CATEGORY_ORDER:
+        return category
+    return "Other"
 
 # ── Page geometry ────────────────────────────────────
 SCALE = 5
