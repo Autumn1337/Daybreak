@@ -41,6 +41,7 @@ data/config.json
 data/seen.json
 data/summaries/*.md
 data/subscribers.json
+data/newspaper/*.png
 
 docs/_posts/*.md
 
@@ -61,3 +62,9 @@ data/subscribers.json
 # Claude Code project files
 CLAUDE.md
 .claude/
+.superpowers/
+
+# Tracked asset exception: bundled fonts
+!data/fonts/
+!data/fonts/*.ttf
+!data/fonts/*.otf

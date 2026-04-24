@@ -70,6 +70,7 @@ Daybreak 通过 **AI 自动打分过滤** + **背景知识补充** + **社区评
 - **💬 社区声音** — 收集并汇总来自 HackerNews、Reddit 等评论区的社区讨论
 - **🔗 跨源去重** — 自动合并来自不同平台的重复内容
 - **📧 邮件订阅** — 自托管（SMTP/IMAP）的邮件列表系统，全自动处理订阅请求
+- **📰 报纸风格日报图片** — NYT 头版式 PNG 内嵌邮件顶部：居中大标题 + italic deck + 按分类分段的 row-major 3 栏；自带开源字体（Source Serif 4 / Inter / 思源宋体），跨平台视觉一致
 - **📝 静态站点生成** — 通过 GitHub Actions 部署为 GitHub Pages 站点，定时自动更新
 - **⚙️ 高度可定制** — 单个 JSON 配置文件，轻松自定义信息源、过滤阈值和 AI 模型
 - **🧙 配置向导** — 交互式 CLI 根据你的兴趣推荐信息源，内置[预设源库](https://autumn1337.github.io/Daybreak/presets)，欢迎社区贡献
